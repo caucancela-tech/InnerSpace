@@ -1,0 +1,10 @@
+{
+  "description": "A personal journaling app designed for self-reflection and memory preservation, helping users document experiences and track their emotional journey.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
