@@ -1,0 +1,49 @@
+
+name: InnerSpace - Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    name: Validate and Build InnerSpace
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Clone repository
+        uses: actions/checkout@v4
+
+      - name: 2. Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 3. Configure pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.21.0
+          run_install: false
+
+      - name: 4. Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 5. Check TypeScript
+        run: pnpm typecheck
+
+      - name: 6. Run automated tests
+        run: pnpm test
+
+      - name: 7. Build project
+        run: pnpm build
+
+      - name: 8. Simulate deployment
+        run: echo "Despliegue realizado correctamente en ambiente de pruebas"
