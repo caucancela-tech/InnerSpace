@@ -1,10 +1,12 @@
 {
-  "description": "A personal journaling app designed for self-reflection and memory preservation, helping users document experiences and track their emotional journey.",
+  "description": "Diario, recuerdos y reflexiones. Tu espacio personal, guardado en este dispositivo, sin conexiones externas.",
   "robots": {
     "index": false
   },
   "accessibility": {
     "addBypassLinks": false,
     "ignoreReducedMotion": false
-  }
+  },
+  "title": "InnerSpace · Tu espacio personal",
+  "language": "es"
 }

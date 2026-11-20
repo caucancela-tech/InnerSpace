@@ -1,16 +1,279 @@
-import { Link } from 'react-router'
-import { ArrowRight, ArrowUpRight, Plus, Feather, Sun, Wind, Zap, Footprints, BookOpen, CalendarDays } from 'lucide-react'
-import { useSession } from '../app/store'
-import { examples, landscape, today, formatDate } from '../domain/models'
-import { MemoryCard } from '../components/ui'
+import { Link } from "react-router";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Plus,
+  Feather,
+  Sun,
+  Wind,
+  Zap,
+  Footprints,
+  BookOpen,
+  CalendarDays,
+} from "lucide-react";
+import { useSession } from "../app/store";
+import { examples, landscape, today, formatDate } from "../domain/models";
+import { MemoryCard } from "../components/ui";
 
 export default function Home() {
-  const { entries, checkins, reflections } = useSession()
-  const date = today()
-  const dayEntries = entries.filter(entry => entry.entryDate === date)
-  const checkin = checkins.find(record => record.date === date)
-  const weekday = new Date().getDay()
-  const monday = new Date(); monday.setDate(monday.getDate() - ((weekday + 6) % 7))
-  const greeting = new Date().getHours() < 12 ? 'Buenos días' : new Date().getHours() < 20 ? 'Buenas tardes' : 'Buenas noches'
-  return <><header className="home-heading"><div><p className="eyebrow">TU ESPACIO, TU RITMO</p><h1>{greeting}<span className="heading-dot">.</span></h1><p className="subtitle">Haz una pausa. Lo que vives merece un lugar.</p></div><div className="date-heading"><Sun size={21} strokeWidth={1.3} /><span>{formatDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}<small>{new Date().getFullYear()}</small></span></div></header><div className="home-layout"><div className="home-main"><section className="writing-hero"><img src={landscape} alt="Un lago tranquilo entre montañas al amanecer" /><div className="hero-shade" /><div className="hero-content"><span className="hero-kicker"><Feather size={15} /> UN MOMENTO PARA TI</span><h2>¿Qué te gustaría<br />guardar de hoy?</h2><p>Una idea, una sensación, un pequeño instante.<br />No tiene que ser perfecto. Solo tuyo.</p><Link to="/diario/nueva" className="button hero-button"><Plus size={17} />Escribir en mi diario<ArrowUpRight size={17} /></Link></div><span className="hero-bottom">A veces, escribir es una forma de escucharte.</span></section><section className="week-strip"><div className="section-heading"><h3>Un día a la vez</h3><Link to="/calendario">Ver calendario <ArrowUpRight size={14} /></Link></div><div className="week-days">{Array.from({ length: 7 }, (_, index) => { const day = new Date(monday); day.setDate(day.getDate() + index); const value = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`; const hasEntry = entries.some(entry => entry.entryDate === value); return <Link key={value} to={`/calendario?fecha=${value}`} className={`week-day ${value === date ? 'current' : ''}`}><span>{day.toLocaleDateString('es', { weekday: 'short' }).replace('.', '')}</span><strong>{day.getDate()}</strong><span className={`day-mark ${hasEntry ? 'has-entry' : ''}`}>{value === date ? 'HOY' : hasEntry ? '•' : '·'}</span></Link> })}</div><div className="week-note"><span className="tiny-dot" /> Tus registros aparecerán aquí. Sin rachas, sin prisas.</div></section><section className="memories-section"><div className="section-heading"><div><p className="eyebrow">LO QUE SE QUEDA CONTIGO</p><h2>Pequeños grandes momentos</h2></div><Link to="/recuerdos">Explorar recuerdos <ArrowUpRight size={15} /></Link></div><p className="example-note">Una ventana a lo que podría ser tu archivo · Contenido de ejemplo</p><div className="memory-grid">{examples.slice(0, 2).map(entry => <MemoryCard key={entry.id} entry={entry} />)}</div></section></div><aside className="home-aside"><section className="day-panel"><div className="section-heading"><h3>Hoy, en tu mundo</h3><span className="today-badge">HOY</span></div><p className="muted small">No necesitas registrarlo todo.</p><div className="day-question"><span className="question-icon lavender"><Wind size={19} /></span><div><span>¿Cómo te sientes?</span><strong>{checkin?.mood?.moodValue || 'Date un momento para sentir'}</strong></div><Link to="/registro" aria-label="Registrar estado de ánimo"><Plus size={18} /></Link></div><div className="day-question"><span className="question-icon amber"><Zap size={18} /></span><div><span>Tu energía</span><strong>{checkin?.energy ? `${checkin.energy.energyValue} de 5` : 'Escucha tu propio ritmo'}</strong></div><Link to="/registro" aria-label="Registrar energía"><Plus size={18} /></Link></div><div className="day-question"><span className="question-icon sage"><Footprints size={18} /></span><div><span>Lo que has hecho</span><strong>{checkin?.activities.length ? checkin.activities.join(', ') : 'Lo cotidiano también cuenta'}</strong></div><Link to="/registro" aria-label="Registrar actividades"><Plus size={18} /></Link></div><Link to="/registro" className="day-link">{checkin ? 'Editar mi registro' : 'Hacer un registro breve'}<ArrowRight size={15} /></Link></section><section className="reflection-card"><span className="reflection-symbol">✧</span><p className="eyebrow">UN ESPACIO PARA MIRAR ATRÁS</p><h2>Lo que esta semana<br />te ha dejado.</h2><p>¿Qué momento quieres recordar?<br />¿Qué has descubierto de ti?</p><Link to="/reflexiones">Mi reflexión semanal<ArrowRight size={17} /></Link><div className="reflection-decoration" /></section><section className="continuity"><BookOpen size={20} strokeWidth={1.3} /><h3>Tu historia está tomando forma</h3><p>{entries.length ? `${entries.length} ${entries.length === 1 ? 'entrada creada' : 'entradas creadas'} en esta sesión. Cada una tiene su lugar.` : 'Tu primera página está por escribir. No hay un momento mejor que el tuyo.'}</p><div><span>{dayEntries.length} entradas hoy</span><span>{reflections.length} reflexiones</span></div></section><div className="quiet-note"><span>“</span><p>No todos los días tienen que ser<br />extraordinarios para merecer<br />ser recordados.</p><div className="quiet-line" /></div></aside></div><div className="prototype-note"><CalendarDays size={15} /><span>Un espacio en construcción. Tus nuevos registros se conservan solo mientras esta sesión esté abierta.</span><Link to="/configuracion">Más información <ArrowRight size={14} /></Link></div></>
+  const { entries, checkins, reflections, activities, moods, energies, activityRecords } =
+    useSession();
+  const date = today();
+  const dayEntries = entries.filter((entry) => entry.entryDate === date);
+  const dayRecord = checkins.find((record) => record.date === date);
+  const dayMood = moods
+    .filter((record) => record.recordedAt === date)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
+  const dayEnergy = energies
+    .filter((record) => record.recordedAt === date)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
+  const checkin =
+    dayRecord ||
+    (dayMood || dayEnergy || dayEntries.length
+      ? {
+          mood: dayMood,
+          energy: dayEnergy,
+          activities: [
+            ...new Set(
+              activityRecords
+                .filter((record) => record.recordedAt === date)
+                .map((record) => record.activityId),
+            ),
+          ],
+        }
+      : undefined);
+  const weekday = new Date().getDay();
+  const monday = new Date();
+  monday.setDate(monday.getDate() - ((weekday + 6) % 7));
+  const greeting =
+    new Date().getHours() < 12
+      ? "Buenos días"
+      : new Date().getHours() < 20
+        ? "Buenas tardes"
+        : "Buenas noches";
+  return (
+    <>
+      <header className="home-heading">
+        <div>
+          <p className="eyebrow">TU ESPACIO, TU RITMO</p>
+          <h1>
+            {greeting}
+            <span className="heading-dot">.</span>
+          </h1>
+          <p className="subtitle">Haz una pausa. Lo que vives merece un lugar.</p>
+        </div>
+        <div className="date-heading">
+          <Sun size={21} strokeWidth={1.3} />
+          <span>
+            {formatDate(date, {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            })}
+            <small>{new Date().getFullYear()}</small>
+          </span>
+        </div>
+      </header>
+      <div className="home-layout">
+        <div className="home-main">
+          <section className="writing-hero">
+            <img src={landscape} alt="Un lago tranquilo entre montañas al amanecer" />
+            <div className="hero-shade" />
+            <div className="hero-content">
+              <span className="hero-kicker">
+                <Feather size={15} /> UN MOMENTO PARA TI
+              </span>
+              <h2>
+                ¿Qué te gustaría
+                <br />
+                guardar de hoy?
+              </h2>
+              <p>
+                Una idea, una sensación, un pequeño instante.
+                <br />
+                No tiene que ser perfecto. Solo tuyo.
+              </p>
+              <Link to="/diario/nueva" className="button hero-button">
+                <Plus size={17} />
+                Escribir en mi diario
+                <ArrowUpRight size={17} />
+              </Link>
+            </div>
+            <span className="hero-bottom">A veces, escribir es una forma de escucharte.</span>
+          </section>
+          <section className="week-strip">
+            <div className="section-heading">
+              <h3>Un día a la vez</h3>
+              <Link to="/calendario">
+                Ver calendario <ArrowUpRight size={14} />
+              </Link>
+            </div>
+            <div className="week-days">
+              {Array.from({ length: 7 }, (_, index) => {
+                const day = new Date(monday);
+                day.setDate(day.getDate() + index);
+                const value = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
+                const hasEntry =
+                  entries.some((entry) => entry.entryDate === value) ||
+                  checkins.some((record) => record.date === value);
+                return (
+                  <Link
+                    key={value}
+                    to={`/calendario?fecha=${value}`}
+                    className={`week-day ${value === date ? "current" : ""}`}
+                  >
+                    <span>
+                      {day.toLocaleDateString("es", { weekday: "short" }).replace(".", "")}
+                    </span>
+                    <strong>{day.getDate()}</strong>
+                    <span className={`day-mark ${hasEntry ? "has-entry" : ""}`}>
+                      {value === date ? "HOY" : hasEntry ? "•" : "·"}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="week-note">
+              <span className="tiny-dot" /> Tus registros aparecerán aquí. Sin rachas, sin prisas.
+            </div>
+          </section>
+          <section className="memories-section">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">LO QUE SE QUEDA CONTIGO</p>
+                <h2>Pequeños grandes momentos</h2>
+              </div>
+              <Link to="/recuerdos">
+                Explorar recuerdos <ArrowUpRight size={15} />
+              </Link>
+            </div>
+            <p className="example-note">
+              {entries.length
+                ? "Páginas guardadas en este dispositivo"
+                : "Una ventana a lo que podría ser tu archivo · Contenido de ejemplo"}
+            </p>
+            <div className="memory-grid">
+              {(entries.length ? entries : examples).slice(0, 2).map((entry) => (
+                <MemoryCard key={entry.id} entry={entry} />
+              ))}
+            </div>
+          </section>
+        </div>
+        <aside className="home-aside">
+          <section className="day-panel">
+            <div className="section-heading">
+              <h3>Hoy, en tu mundo</h3>
+              <span className="today-badge">HOY</span>
+            </div>
+            <p className="muted small">No necesitas registrarlo todo.</p>
+            <div className="day-question">
+              <span className="question-icon lavender">
+                <Wind size={19} />
+              </span>
+              <div>
+                <span>¿Cómo te sientes?</span>
+                <strong>{checkin?.mood?.moodValue || "Date un momento para sentir"}</strong>
+              </div>
+              <Link to="/registro" aria-label="Registrar estado de ánimo">
+                <Plus size={18} />
+              </Link>
+            </div>
+            <div className="day-question">
+              <span className="question-icon amber">
+                <Zap size={18} />
+              </span>
+              <div>
+                <span>Tu energía</span>
+                <strong>
+                  {checkin?.energy
+                    ? `${checkin.energy.energyValue} de 5`
+                    : "Escucha tu propio ritmo"}
+                </strong>
+              </div>
+              <Link to="/registro" aria-label="Registrar energía">
+                <Plus size={18} />
+              </Link>
+            </div>
+            <div className="day-question">
+              <span className="question-icon sage">
+                <Footprints size={18} />
+              </span>
+              <div>
+                <span>Lo que has hecho</span>
+                <strong>
+                  {checkin?.activities.length
+                    ? checkin.activities
+                        .map((id) => activities.find((activity) => activity.id === id)?.name)
+                        .filter(Boolean)
+                        .join(", ")
+                    : "Lo cotidiano también cuenta"}
+                </strong>
+              </div>
+              <Link to="/registro" aria-label="Registrar actividades">
+                <Plus size={18} />
+              </Link>
+            </div>
+            <Link to="/registro" className="day-link">
+              {dayRecord ? "Editar mi registro" : "Hacer un registro breve"}
+              <ArrowRight size={15} />
+            </Link>
+          </section>
+          <section className="reflection-card">
+            <span className="reflection-symbol">✧</span>
+            <p className="eyebrow">UN ESPACIO PARA MIRAR ATRÁS</p>
+            <h2>
+              Lo que esta semana
+              <br />
+              te ha dejado.
+            </h2>
+            <p>
+              ¿Qué momento quieres recordar?
+              <br />
+              ¿Qué has descubierto de ti?
+            </p>
+            <Link to="/reflexiones">
+              Mi reflexión semanal
+              <ArrowRight size={17} />
+            </Link>
+            <div className="reflection-decoration" />
+          </section>
+          <section className="continuity">
+            <BookOpen size={20} strokeWidth={1.3} />
+            <h3>Tu historia está tomando forma</h3>
+            <p>
+              {entries.length
+                ? `${entries.length} ${
+                    entries.length === 1 ? "entrada creada" : "entradas creadas"
+                  } en este dispositivo. Cada una tiene su lugar.`
+                : "Tu primera página está por escribir. No hay un momento mejor que el tuyo."}
+            </p>
+            <div>
+              <span>{dayEntries.length} entradas hoy</span>
+              <span>{reflections.length} reflexiones</span>
+            </div>
+          </section>
+          <div className="quiet-note">
+            <span>“</span>
+            <p>
+              No todos los días tienen que ser
+              <br />
+              extraordinarios para merecer
+              <br />
+              ser recordados.
+            </p>
+            <div className="quiet-line" />
+          </div>
+        </aside>
+      </div>
+      <div className="prototype-note">
+        <CalendarDays size={15} />
+        <span>
+          Tu espacio vive en este dispositivo. Conserva una copia de seguridad fuera del navegador.
+        </span>
+        <Link to="/configuracion">
+          Más información <ArrowRight size={14} />
+        </Link>
+      </div>
+    </>
+  );
 }
